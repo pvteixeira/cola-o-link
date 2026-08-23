@@ -1,7 +1,7 @@
 # 🎬 COLA O LINK
 
 <p align="center">
-  <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80" alt="COLA O LINK Banner" width="100%" style="border-radius: 12px; margin-bottom: 16px;" />
+  <img src="./public/banner.png" alt="COLA O LINK Banner" width="100%" style="border-radius: 12px; margin-bottom: 16px;" />
 </p>
 
 <p align="center">
