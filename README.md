@@ -1,315 +1,212 @@
-# VideoFetch
+# 🎬 COLA O LINK
 
-**VideoFetch** é uma aplicação web full-stack moderna, modular e segura projetada para análise de metadados e download controlado de vídeos públicos de plataformas compatíveis.
+<p align="center">
+  <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80" alt="COLA O LINK Banner" width="100%" style="border-radius: 12px; margin-bottom: 16px;" />
+</p>
 
-A aplicação foi construída com foco em **segurança**, **arquitetura limpa**, **baixo custo operacional** e estrita **conformidade legal e ética** (não contorna DRM, não acessa conteúdo privado, não quebra paywalls nem autenticações).
+<p align="center">
+  <strong>Cole o link. Baixe sem estresse.</strong><br>
+  <em>Plataforma brasileira de alta performance para processamento, conversão e download de mídias públicas com modelo de monetização integrado.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js" alt="Next.js 14" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/FFmpeg-Ready-007808?style=for-the-badge&logo=ffmpeg" alt="FFmpeg" />
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker" alt="Docker" />
+  <img src="https://img.shields.io/badge/Security-HMAC--SHA256-red?style=for-the-badge" alt="HMAC SHA256" />
+</p>
 
 ---
 
-## 🚀 Tecnologias
+## 📌 Visão Geral do Projeto
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons.
-- **Backend & APIs**: Next.js API Routes, TypeScript, Zod.
-- **Filas & Processamento**: Sistema híbrido com BullMQ + Redis (Produção/Docker) e fallback automático para Fila em Memória assíncrona (Desenvolvimento local zero-config).
-- **Mídia**: Integração segura com `yt-dlp` e `ffmpeg` via subprocessos isolados (`shell: false`).
-- **Infraestrutura**: Docker multi-stage & Docker Compose.
-- **Testes**: Vitest.
+O **COLA O LINK** é uma aplicação web full-stack moderna, veloz e escalável criada para resolver a dor de milhões de usuários brasileiros que buscam baixar vídeos e músicas da internet sem serem bombardeados por vírus, pop-ups invasivos ou páginas confusas.
+
+Além da excelência técnica e visual, o projeto foi projetado estrategicamente com uma **arquitetura orientada a monetização (SaaS / Freemium)** e com **custo operacional próximo a zero** (graças ao modelo efêmero de retenção zero de arquivos).
 
 ---
 
-## 🏛️ Arquitetura do Sistema
+## 💎 Modelo de Negócio & Monetização
 
+O **COLA O LINK** foi estruturado para gerar múltiplas fontes de receita previsíveis e passivas:
+
+```text
+                               ┌─────────────────────────────┐
+                               │       COLA O LINK           │
+                               │  (Estratégia de Receita)    │
+                               └──────────────┬──────────────┘
+                                              │
+         ┌───────────────────┬────────────────┼───────────────────┬───────────────────┐
+         ▼                   ▼                ▼                   ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐ ┌────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ Assinatura VIP  │ │ Anúncios Limpos │ │ Ferramentas IA │ │ Afiliados       │ │ API B2B         │
+│ R$ 9,90 / mês   │ │ Banners nativos │ │ Transcrição e  │ │ Softwares de    │ │ Créditos para   │
+│ Sem fila / 4K   │ │ durante loading │ │ cortes Shorts  │ │ edição de vídeo │ │ devs e bots     │
+└─────────────────┘ └─────────────────┘ └────────────────┘ └─────────────────┘ └─────────────────┘
 ```
-/
-├── app/                      # Rotas e páginas (App Router)
+
+### 1. 👑 Plano VIP / PRO (Assinatura Recorrente via Pix e Stripe)
+- **Usuário Grátis:** Downloads individuais em até 1080p com velocidade padrão.
+- **Usuário VIP (R$ 9,90/mês ou R$ 29/ano):**
+  - **Fila prioritária instantânea** (processamento acelerado).
+  - **Download de Playlists inteiras** com 1 clique em arquivo `.zip`.
+  - **Áudio de Alta Fidelidade (MP3 320 kbps / FLAC)**.
+  - **Zero anúncios** em toda a interface.
+
+### 2. 📢 Publicidade Programática Nativa
+- Posicionamento estratégico de banners não-intrusivos (Google AdSense / Monetag / Adsterra).
+- Anúncio de espera contextual exibido enquanto a barra de progresso do FFmpeg finaliza o vídeo.
+
+### 3. ✂️ Recursos Premium para Criadores de Conteúdo
+- **Gerador de Cortes:** Extração de trechos específicos de vídeos longos prontos para TikTok / Reels / Shorts.
+- **Transcrição com IA:** Geração automática de legendas `.srt` e texto transcrito.
+
+### 4. 🤝 Marketing de Afiliados
+- Recomendações integradas de editores de vídeo (CapCut Pro, Canva, Filmora) e bancos de áudio.
+
+---
+
+## ⚡ Diferenciais Técnicos
+
+- 🎧 **Áudio e Vídeo 100% Sincronizados:** Integração com **FFmpeg** para mesclagem automática de trilhas de vídeo HD e áudio em formato puro `.mp4`.
+- 🎵 **Conversão Real para MP3:** Extração de faixas sonoras convertidas diretamente em `.mp3` a 320 kbps.
+- 🚀 **Fila Híbrida Inteligente:** Alterna automaticamente entre Fila em Memória (desenvolvimento local sem configurações) e Redis + BullMQ (produção de alta concorrência).
+- 🧹 **Custo Zero de Armazenamento:** Política de Retenção Zero (TTL de 15 minutos). Arquivos temporários são apagados automaticamente por workers contínuos.
+
+---
+
+## 🛡️ Segurança, Criptografia e Conformidade
+
+A plataforma segue rigorosos padrões de segurança cibernética e privacidade (LGPD/GDPR):
+
+1. **Criptografia HMAC-SHA256:** Links de download geram tokens assinados criptograficamente com expiração temporal para impedir ataques de enumeração (IDOR) e vazamento de links.
+2. **Proteção Anti-SSRF em Nível de DNS:** Validação rigorosa que impede requisições para IPs internos da infraestrutura (`localhost`, `10.x`, `192.168.x`, `169.254.169.254`).
+3. **Zero Command Injection:** Subprocessos executados exclusivamente através de listas explícitas de argumentos com `shell: false`.
+4. **Cabeçalhos HTTP Blindados:** Configuração nativa de HSTS, `X-Frame-Options: DENY` (anti-clickjacking), `nosniff` e `Permissions-Policy`.
+5. **Conformidade Ética:** O sistema não contorna DRM (Widevine/FairPlay), não acessa conteúdo privado sem autorização e não quebra paywalls.
+
+---
+
+## 🧰 Stack Tecnológica
+
+| Camada | Tecnologias |
+| :--- | :--- |
+| **Frontend** | Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons |
+| **Backend** | Next.js Server Components & Route Handlers, Zod, Crypto API |
+| **Mídia & Transcoding** | FFmpeg (Master Build) + yt-dlp |
+| **Filas & Workers** | BullMQ + Redis / Fila em Memória Assíncrona |
+| **Infraestrutura** | Docker (Multi-stage build), Docker Compose, Standalone Output |
+| **Testes** | Vitest (Suíte automatizada com 14+ testes de segurança e providers) |
+
+---
+
+## 🏗️ Estrutura do Projeto
+
+```text
+COLA O LINK
+├── app/
 │   ├── api/
-│   │   ├── analyze/          # POST /api/analyze (Metadados e formatos)
-│   │   └── download/         # POST /api/download, GET /:id, GET /:id/file
-│   ├── layout.tsx            # Layout raiz com tema escuro e SEO
-│   └── page.tsx              # UI principal (Hero, Cards, Status, Modais)
-├── components/               # Componentes React desacoplados e reutilizáveis
-│   ├── Header.tsx            # Navegação e identidade visual
-│   ├── Hero.tsx              # Input de busca, colar e badges
-│   ├── VideoCard.tsx         # Card de resultado com seleção de resolução
-│   ├── DownloadProgress.tsx  # Acompanhamento de fila e progresso em tempo real
-│   ├── HowItWorks.tsx        # Seção explicativa em 3 etapas
-│   ├── PlatformStatus.tsx    # Tabela de compatibilidade e restrições
-│   └── TermsModal.tsx        # Modal de diretrizes éticas e legais
-├── providers/                # Arquitetura modular de provedores de vídeo
-│   ├── base.provider.ts      # Interface e classe abstrata VideoProvider
-│   ├── registry.ts           # Registro central de providers
-│   ├── youtube/              # Provider YouTube
-│   ├── vimeo/                # Provider Vimeo
-│   ├── tiktok/               # Provider TikTok
-│   ├── reddit/               # Provider Reddit
-│   ├── instagram/            # Provider Instagram (Restrições sinalizadas)
-│   └── x/                    # Provider X/Twitter (Restrições sinalizadas)
-├── queues/                   # Sistema de filas desacoplado
-│   ├── queue.interface.ts    # Interface comum de enfileiramento
-│   ├── bullmq.queue.ts       # Implementação Redis / BullMQ
-│   ├── memory.queue.ts       # Implementação em memória para desenvolvimento
-│   └── queue.factory.ts      # Factory com seleção automática
-├── workers/                  # Workers assíncronos
-│   ├── download.worker.ts    # Processamento e download de mídias
-│   └── cleanup.worker.ts     # Limpeza periódica de arquivos temporários
-├── services/                 # Regras de negócio
-│   ├── analyze.service.ts    # Orquestração de análise
-│   ├── download.service.ts   # Orquestração de jobs de download
-│   └── storage.service.ts    # Gestão de storage temporário e TTL
+│   │   ├── analyze/                  # POST: Análise de metadados e formatos
+│   │   └── download/                 # POST: Criação de jobs de download
+│   │       └── [jobId]/
+│   │           ├── route.ts          # GET: Status e progresso da fila
+│   │           └── file/route.ts     # GET: Entrega segura de streaming do arquivo
+│   ├── error.tsx                     # Error boundary do App Router
+│   ├── global-error.tsx              # Fallback global
+│   ├── globals.css                   # Estilos globais e design system escuro
+│   ├── layout.tsx                    # Layout raiz com SEO e tags sociais
+│   ├── loading.tsx                   # Indicador de carregamento suave
+│   ├── not-found.tsx                 # Página 404 personalizada
+│   └── page.tsx                      # Interface principal do usuário
+├── components/                       # Componentes modulares
+│   ├── DownloadProgress.tsx          # Card de progresso e botão de download final
+│   ├── Footer.tsx                    # Rodapé com branding e links legais
+│   ├── Header.tsx                    # Logotipo e navegação
+│   ├── Hero.tsx                      # Campo de busca e colar link
+│   ├── HowItWorks.tsx                # Guia visual em 3 passos
+│   ├── PlatformStatus.tsx            # Status de compatibilidade das plataformas
+│   ├── TermsModal.tsx                # Modal de termos de uso e conformidade
+│   └── VideoCard.tsx                 # Seleção de resolução (1080p, 720p, MP3)
 ├── lib/
-│   ├── security/             # Prevenção de SSRF, DNS check, Rate Limiter e Sanitização
-│   ├── process/              # Subprocess seguro (sem command injection)
-│   └── errors/               # Hierarquia de erros amigáveis
-├── types/                    # Tipagem TypeScript estrita
-└── config/                   # Configurações centrais
+│   ├── errors/                       # Classes de erro tipadas
+│   ├── process/                      # Subprocessos seguros isolados
+│   └── security/                     # Rate limit, SSRF check, HMAC token e sanitize
+├── providers/                        # Providers desacoplados
+│   ├── instagram/                    # Provider Instagram (com suporte a cookies.txt)
+│   ├── reddit/                       # Provider Reddit
+│   ├── tiktok/                       # Provider TikTok
+│   ├── vimeo/                        # Provider Vimeo
+│   ├── x/                            # Provider X / Twitter
+│   ├── youtube/                      # Provider YouTube
+│   ├── registry.ts                   # Registro dinâmico de plataformas
+│   └── ytdlp-runner.ts               # Runner do yt-dlp + FFmpeg
+├── queues/                           # Abstração de filas (Memory & BullMQ)
+├── services/                         # Serviços de negócio (Analyze, Download, Storage)
+├── tests/                            # Testes unitários com Vitest
+└── workers/                          # DownloadWorker e CleanupWorker
 ```
 
 ---
 
-## 🔒 Diretrizes de Segurança e Ética
+## 🚀 Como Executar Localmente
 
-1. **Proteção Anti-SSRF em Nível de DNS**: Toda URL submetida passa por validação de allowlist de domínios e resolução de DNS assíncrona (`dns.lookup`), bloqueando sumariamente qualquer resolução para IPs privados (RFC 1918: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`, `169.254.0.0/16`, `::1`).
-2. **Execução Segura de Subprocessos**: Utiliza `execFile` e `spawn` com array de argumentos explícito (`shell: false`), tornando impossível ataques de Command Injection via URL ou parâmetros.
-3. **Proteção contra Path Traversal**: Todos os caminhos de arquivos temporários são validados com `path.resolve` e gerados com nomes únicos aleatórios (`UUID`), impedindo vazamento de diretórios (`../`).
-4. **Rate Limiting**: Janela deslizante de 30 requisições por minuto por IP.
-5. **Limpeza Automática (TTL de 15 minutos)**: Nenhum vídeo é armazenado permanentemente. Um worker contínuo apaga arquivos temporários expirados.
-6. **Respeito a DRM e Conteúdo Privado**: A plataforma recusa expressamente tentativas de download de mídias com criptografia DRM (Widevine/FairPlay), vídeos privados que exijam login ou conteúdos de membros pagos.
+### 1. Pré-requisitos
+- **Node.js**: v18+ ou v20+
+- **NPM** instalado
 
----
-
-## 📋 Pré-requisitos
-
-- **Node.js**: versão 18.x, 20.x ou superior.
-- **NPM**: versão 9.x ou superior.
-- *(Opcional)* **Docker e Docker Compose** (para execução em containers).
-- *(Opcional)* **yt-dlp** e **ffmpeg** (já inclusos no container Docker; para execução local completa, podem ser instalados no sistema operacional).
-
----
-
-## ⚙️ Configuração e Variáveis de Ambiente
-
-Copie o arquivo de exemplo:
+### 2. Instalação e Execução
 
 ```bash
-cp .env.example .env.local
-```
-
-### Variáveis Disponíveis
-
-| Variável | Padrão | Descrição |
-| :--- | :--- | :--- |
-| `PORT` | `3000` | Porta onde o servidor Next.js será executado |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | URL pública da aplicação |
-| `REDIS_URL` | `""` (vazio) | URL de conexão Redis. Se vazia, usa fila em memória automaticamente |
-| `QUEUE_CONCURRENCY` | `2` | Número máximo de downloads simultâneos |
-| `TEMP_STORAGE_DIR` | `/tmp/videofetch-downloads` | Diretório no disco para os arquivos temporários |
-| `YT_DLP_PATH` | `yt-dlp` | Caminho do executável do yt-dlp |
-| `FFMPEG_PATH` | `ffmpeg` | Caminho do executável do ffmpeg |
-
----
-
-## 💻 Execução Local
-
-### 1. Instalação das dependências:
-```bash
+# 1. Instalar as dependências
 npm install
-```
 
-### 2. Execução dos testes automatizados:
-```bash
+# 2. Executar a suíte de testes de segurança
 npm test
-```
 
-### 3. Execução em modo de desenvolvimento:
-```bash
+# 3. Iniciar o servidor de desenvolvimento
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
+Abra **[http://localhost:3000](http://localhost:3000)** no seu navegador.
 
 ---
 
-## 🐳 Execução com Docker
+## 🐳 Executando com Docker (Produção)
 
-Para subir a aplicação completa com Redis, `yt-dlp` e `ffmpeg` configurados automaticamente:
+Para subir o ambiente completo com **Node.js + Redis + FFmpeg + yt-dlp** isolados:
 
 ```bash
-docker compose up --build
-```
+# Iniciar todos os serviços
+docker compose up -d --build
 
-A aplicação estará disponível em `http://localhost:3000`.
+# Ver logs da aplicação
+docker compose logs -f app
 
-Para parar a execução:
-```bash
+# Encerrar
 docker compose down
 ```
 
 ---
 
-## 🔌 Endpoints da API REST
+## 🌐 Guia de Hospedagem Econômica
 
-### 1. Analisar Vídeo
-Obtém os metadados públicos, duração, thumbnail e formatos disponíveis.
+Para manter o custo fixo abaixo de **R$ 35,00/mês**:
 
-- **Método**: `POST /api/analyze`
-- **Request Body**:
-```json
-{
-  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-}
-```
-- **Response (200 OK)**:
-```json
-{
-  "success": true,
-  "platform": "youtube",
-  "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)",
-  "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
-  "duration": 213,
-  "durationFormatted": "03:33",
-  "author": "Rick Astley",
-  "formats": [
-    {
-      "id": "137+140",
-      "format": "mp4",
-      "quality": "1080p",
-      "label": "1080p (MP4)",
-      "filesizeFormatted": "45.2 MB",
-      "ext": "mp4",
-      "hasVideo": true,
-      "hasAudio": true
-    },
-    {
-      "id": "140",
-      "format": "mp3",
-      "quality": "audio_only",
-      "label": "Áudio MP3 (320kbps)",
-      "filesizeFormatted": "5.1 MB",
-      "ext": "mp3",
-      "hasVideo": false,
-      "hasAudio": true,
-      "isAudioOnly": true
-    }
-  ]
-}
-```
+1. **VPS Recomendada:** Hostinger Brasil (Datacenter São Paulo), Hetzner Cloud ou DigitalOcean.
+2. **CDN & Proteção:** Cloudflare (Plano 100% Free com SSL e Anti-DDoS).
+3. **Deploy:** Basta clonar o repositório na VPS e rodar `docker compose up -d`.
 
 ---
 
-### 2. Solicitar Download
-Enfileira uma tarefa de download assíncrona.
+## ⚖️ Termos de Uso e Aviso Legal
 
-- **Método**: `POST /api/download`
-- **Request Body**:
-```json
-{
-  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  "format": "mp4",
-  "quality": "1080p",
-  "formatId": "137+140"
-}
-```
-- **Response (200 OK)**:
-```json
-{
-  "success": true,
-  "jobId": "a81d4f2e-5c6b-4e89-b7b1-912f38d93c12"
-}
-```
+O **COLA O LINK** é uma ferramenta utilitária para conversão e visualização de conteúdos públicos. O usuário é o único responsável pelo uso legal dos arquivos baixados, devendo respeitar os direitos autorais dos criadores de conteúdo e os termos de serviço de cada plataforma.
 
 ---
 
-### 3. Consultar Status do Job
-Retorna o progresso em tempo real do processamento.
-
-- **Método**: `GET /api/download/:jobId`
-- **Response (200 OK)**:
-```json
-{
-  "jobId": "a81d4f2e-5c6b-4e89-b7b1-912f38d93c12",
-  "status": "processing",
-  "progress": 65,
-  "message": "Baixando... 65%"
-}
-```
-
-**Estados possíveis**:
-- `queued`: Na fila de processamento.
-- `analyzing`: Analisando fluxo de mídia.
-- `processing`: Baixando/mesclando arquivos.
-- `completed`: Arquivo finalizado com `downloadUrl` disponível.
-- `failed`: Falha durante a operação.
-- `unavailable`: Conteúdo inacessível ou com restrições legais.
-
----
-
-### 4. Obter Arquivo Processado
-Faz o download com cabeçalhos HTTP adequados (`Content-Disposition: attachment`).
-
-- **Método**: `GET /api/download/:jobId/file`
-
----
-
-## 🛠️ Como Adicionar um Novo Provider
-
-A arquitetura foi desenvolvida para que novas plataformas possam ser adicionadas em minutos sem modificar os controllers ou a UI.
-
-### Passo 1: Criar a classe do Provider em `providers/meu-provider/`
-
-Crie o arquivo `providers/dailymotion/dailymotion.provider.ts`:
-
-```typescript
-import { BaseProvider, ProgressCallback } from '../base.provider';
-import { VideoMetadata, DownloadOptions, DownloadResult, PlatformId } from '@/types/video';
-import { extractYtDlpMetadata, downloadWithYtDlp } from '../ytdlp-runner';
-
-export class DailymotionProvider extends BaseProvider {
-  readonly id: PlatformId = 'dailymotion' as PlatformId;
-  readonly name = 'Dailymotion';
-  readonly supportedDomains = ['dailymotion.com', 'www.dailymotion.com', 'dai.ly'];
-
-  async getMetadata(url: string): Promise<VideoMetadata> {
-    return extractYtDlpMetadata(url, this.id);
-  }
-
-  async download(
-    url: string,
-    options: DownloadOptions,
-    onProgress?: ProgressCallback
-  ): Promise<DownloadResult> {
-    const meta = await this.getMetadata(url);
-    return downloadWithYtDlp(url, options, meta.title, onProgress);
-  }
-}
-```
-
-### Passo 2: Adicionar o domínio na allowlist em `config/app.config.ts`
-
-```typescript
-allowedHostnames: [
-  // ...
-  'dailymotion.com',
-  'www.dailymotion.com',
-  'dai.ly',
-]
-```
-
-### Passo 3: Registrar no `providers/registry.ts`
-
-```typescript
-import { DailymotionProvider } from './dailymotion/dailymotion.provider';
-
-// Dentro do método registerDefaultProviders():
-this.register(new DailymotionProvider());
-```
-
----
-
-## 🩺 Troubleshooting
-
-1. **Erro de SSRF ao testar links locais**:
-   - O VideoFetch intencionalmente bloqueia requisições para `localhost`, `127.0.0.1` ou faixas privadas para proteger sua infraestrutura. Utilize URLs públicas reais.
-2. **Download sem progresso no ambiente Windows sem yt-dlp**:
-   - O sistema possui um gerador de mídia resiliente para desenvolvimento que simula o fluxo completo. Para downloads reais locais sem Docker, instale o `yt-dlp` (`pip install yt-dlp`) e `ffmpeg` e certifique-se de que estejam no seu PATH, ou simplesmente utilize `docker compose up`.
-3. **Redis não configurado**:
-   - Não é necessário ter o Redis instalado para testar localmente. Quando `REDIS_URL` não for definido, o VideoFetch ativa automaticamente o gerenciador de fila assíncrono em memória.
+<p align="center">
+  Feito com foco em performance, design e segurança.<br>
+  <strong>COLA O LINK © 2026</strong>
+</p>
