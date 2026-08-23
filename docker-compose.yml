@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: videofetch-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - TEMP_STORAGE_DIR=/tmp/videofetch-downloads
+      - QUEUE_CONCURRENCY=3
+    volumes:
+      - videofetch-temp:/tmp/videofetch-downloads
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: videofetch-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - videofetch-redis-data:/data
+
+volumes:
+  videofetch-temp:
+  videofetch-redis-data:
