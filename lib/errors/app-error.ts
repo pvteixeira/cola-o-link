@@ -34,7 +34,7 @@ export class AppError extends Error {
     return new AppError('INVALID_URL', msg, 400);
   }
 
-  static unsupportedPlatform(msg = 'Esta plataforma ainda não é compatível com o VideoFetch.') {
+  static unsupportedPlatform(msg = 'Esta plataforma ainda não é compatível com o COLA O LINK.') {
     return new AppError('UNSUPPORTED_PLATFORM', msg, 422);
   }
 

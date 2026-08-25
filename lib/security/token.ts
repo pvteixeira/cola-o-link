@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const SECRET_KEY = process.env.DOWNLOAD_SIGNING_SECRET || 'videofetch-default-secure-signing-salt-2026';
+const SECRET_KEY = process.env.DOWNLOAD_SIGNING_SECRET || 'colaolink-default-secure-signing-salt-2026';
 
 export interface SignedDownloadToken {
   token: string;

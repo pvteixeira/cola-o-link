@@ -72,7 +72,7 @@ export const PlatformStatus: React.FC = () => {
             Plataformas e Compatibilidade
           </h2>
           <p className="text-gray-400 text-sm sm:text-base">
-            O VideoFetch opera em estrita conformidade técnica e ética. Veja abaixo as diretrizes de cada provedor.
+            O COLA O LINK opera em estrita conformidade técnica e ética. Veja abaixo as diretrizes de cada provedor.
           </p>
         </div>
 

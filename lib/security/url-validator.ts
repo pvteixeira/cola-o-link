@@ -62,7 +62,7 @@ export async function validateAndSecureUrl(rawUrl: string): Promise<ValidatedUrl
   });
 
   if (!isAllowed) {
-    throw AppError.unsupportedPlatform('Esta plataforma ainda não é compatível com o VideoFetch.');
+    throw AppError.unsupportedPlatform('Esta plataforma ainda não é compatível com o COLA O LINK.');
   }
 
   // Anti-SSRF: Resolução de DNS para evitar DNS rebinding para IP privado

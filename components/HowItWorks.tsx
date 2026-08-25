@@ -8,7 +8,7 @@ export const HowItWorks: React.FC = () => {
     {
       step: '01',
       title: 'Cole o Link',
-      description: 'Copie a URL pública do vídeo que deseja salvar e cole na barra de busca do VideoFetch.',
+      description: 'Copie a URL pública do vídeo que deseja salvar e cole na barra de busca do COLA O LINK.',
       icon: Link2,
       accent: 'from-cyan-500/20 to-cyan-500/5',
       border: 'border-cyan-500/30',

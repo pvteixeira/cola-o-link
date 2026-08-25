@@ -17,7 +17,7 @@ export interface StoredFileMetadata {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __videoFetchStorageService: StorageService | undefined;
+  var __colaOLinkStorageService: StorageService | undefined;
 }
 
 export class StorageService {
@@ -27,17 +27,17 @@ export class StorageService {
   constructor() {
     this.candidateDirs = [
       path.resolve(process.cwd(), 'temp_downloads'),
-      path.join(os.tmpdir(), 'videofetch-downloads'),
+      path.join(os.tmpdir(), 'colaolink-downloads'),
       APP_CONFIG.storage.tempDir,
     ];
     this.ensureStorageDirs();
   }
 
   public static getInstance(): StorageService {
-    if (!global.__videoFetchStorageService) {
-      global.__videoFetchStorageService = new StorageService();
+    if (!global.__colaOLinkStorageService) {
+      global.__colaOLinkStorageService = new StorageService();
     }
-    return global.__videoFetchStorageService;
+    return global.__colaOLinkStorageService;
   }
 
   public async ensureStorageDirs(): Promise<void> {

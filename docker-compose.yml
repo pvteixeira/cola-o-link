@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: videofetch-app
+    container_name: colaolink-app
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -13,22 +13,22 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - REDIS_URL=redis://redis:6379
-      - TEMP_STORAGE_DIR=/tmp/videofetch-downloads
+      - TEMP_STORAGE_DIR=/tmp/colaolink-downloads
       - QUEUE_CONCURRENCY=3
     volumes:
-      - videofetch-temp:/tmp/videofetch-downloads
+      - colaolink-temp:/tmp/colaolink-downloads
     depends_on:
       - redis
 
   redis:
     image: redis:7-alpine
-    container_name: videofetch-redis
+    container_name: colaolink-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
-      - videofetch-redis-data:/data
+      - colaolink-redis-data:/data
 
 volumes:
-  videofetch-temp:
-  videofetch-redis-data:
+  colaolink-temp:
+  colaolink-redis-data:

@@ -29,7 +29,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">Termos de Uso & Diretrizes Éticas</h2>
-            <p className="text-xs text-gray-400">Conformidade legal e limites operacionais do VideoFetch</p>
+            <p className="text-xs text-gray-400">Conformidade legal e limites operacionais do COLA O LINK</p>
           </div>
         </div>
 

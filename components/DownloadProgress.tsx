@@ -104,7 +104,7 @@ export const DownloadProgress: React.FC<DownloadProgressProps> = ({ jobId, onRes
                   ? 'O download foi processado e iniciado no seu navegador.'
                   : isFailed
                   ? error || jobState?.error || 'Ocorreu um erro no processamento do vídeo.'
-                  : jobState?.message || 'Processando nos servidores do VideoFetch...'}
+                  : jobState?.message || 'Processando nos servidores do COLA O LINK...'}
               </p>
             </div>
           </div>

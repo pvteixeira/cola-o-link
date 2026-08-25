@@ -2,37 +2,38 @@ import { IQueueManager } from './queue.interface';
 import { MemoryQueueManager } from './memory.queue';
 import { BullMQManager } from './bullmq.queue';
 import { APP_CONFIG } from '@/config/app.config';
-import { processDownloadJob } from '@/workers/download.worker';
+import { DownloadWorker } from '@/workers/download.worker';
 import '@/workers/cleanup.worker'; // Garante inicialização da limpeza
 
 declare global {
   // eslint-disable-next-line no-var
-  var __videoFetchQueueManager: IQueueManager | undefined;
+  var __colaOLinkQueueManager: IQueueManager | undefined;
 }
 
 export function getQueueManager(): IQueueManager {
-  if (global.__videoFetchQueueManager) {
-    return global.__videoFetchQueueManager;
+  if (global.__colaOLinkQueueManager) {
+    return global.__colaOLinkQueueManager;
   }
 
   let manager: IQueueManager;
 
   if (APP_CONFIG.queue.redisUrl && APP_CONFIG.queue.redisUrl.trim() !== '') {
     try {
-      manager = new BullMQManager(APP_CONFIG.queue.redisUrl);
-      console.log('[QueueFactory] Utilizando BullMQ com Redis:', APP_CONFIG.queue.redisUrl);
+      manager = new BullMQManager();
+      console.log('📦 [QueueManager] Inicializado BullMQ com Redis em:', APP_CONFIG.queue.redisUrl);
     } catch (err) {
-      console.warn('[QueueFactory] Falha ao conectar ao Redis, utilizando MemoryQueue:', err);
-      const memManager = new MemoryQueueManager();
-      memManager.setProcessor(processDownloadJob);
-      manager = memManager;
+      console.warn('⚠️ [QueueManager] Falha ao conectar ao Redis, utilizando fallback MemoryQueue:', err);
+      manager = new MemoryQueueManager();
     }
   } else {
-    const memManager = new MemoryQueueManager();
-    memManager.setProcessor(processDownloadJob);
-    manager = memManager;
+    manager = new MemoryQueueManager();
+    console.log('📦 [QueueManager] Inicializado MemoryQueue assíncrona (ambiente de desenvolvimento/standalone)');
   }
 
-  global.__videoFetchQueueManager = manager;
+  // Inicializa o worker padrão de processamento
+  const worker = new DownloadWorker(manager);
+  worker.start();
+
+  global.__colaOLinkQueueManager = manager;
   return manager;
 }

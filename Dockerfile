@@ -38,8 +38,8 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Criação do diretório temporário para processamento de downloads
-RUN mkdir -p /tmp/videofetch-downloads && \
-    chown -R nextjs:nodejs /tmp/videofetch-downloads
+RUN mkdir -p /tmp/colaolink-downloads && \
+    chown -R nextjs:nodejs /tmp/colaolink-downloads
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

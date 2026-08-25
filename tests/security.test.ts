@@ -24,7 +24,7 @@ describe('Camada de Segurança e Prevenção de SSRF', () => {
 
   it('deve rejeitar plataformas não presentes na allowlist', async () => {
     await expect(validateAndSecureUrl('https://evil-site.com/exploit.mp4')).rejects.toThrow(
-      'Esta plataforma ainda não é compatível com o VideoFetch.'
+      'Esta plataforma ainda não é compatível com o COLA O LINK.'
     );
   });
 

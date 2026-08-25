@@ -47,7 +47,7 @@ export const APP_CONFIG = {
   },
   queue: {
     redisUrl: process.env.REDIS_URL || '',
-    name: 'videofetch-downloads-queue',
+    name: 'colaolink-downloads-queue',
     concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '2', 10),
   },
   binaries: {
