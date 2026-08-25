@@ -1,0 +1,20 @@
+name: 💡 Sugestão de Melhoria / Nova Plataforma
+description: Sugira uma nova funcionalidade ou suporte a uma nova plataforma de mídia
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a evoluir o COLA O LINK!
+  - type: textarea
+    id: feature
+    attributes:
+      label: Descrição da Sugestão
+      description: Explique detalhadamente a ideia ou a nova plataforma que gostaria de ver suportada.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Caso de Uso / Benefício
+      description: Por que essa melhoria seria útil para os usuários?

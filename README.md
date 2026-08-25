@@ -6,86 +6,46 @@
 
 <p align="center">
   <strong>Cole o link. Baixe sem estresse.</strong><br>
-  <em>Plataforma brasileira de alta performance para processamento, conversão e download de mídias públicas com modelo de monetização integrado.</em>
+  <em>Plataforma web open-source de alta performance para processamento, conversão e download de mídias públicas. Sem pop-ups, sem vírus e pronta para self-hosting.</em>
 </p>
 
 <p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge" alt="MIT License" /></a>
+  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge" alt="PRs Welcome" /></a>
   <img src="https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/FFmpeg-Ready-007808?style=for-the-badge&logo=ffmpeg" alt="FFmpeg" />
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker" alt="Docker" />
-  <img src="https://img.shields.io/badge/Security-HMAC--SHA256-red?style=for-the-badge" alt="HMAC SHA256" />
 </p>
 
 ---
 
-## 📌 Visão Geral do Projeto
+## 💡 Por que este projeto existe?
 
-O **COLA O LINK** é uma aplicação web full-stack moderna, veloz e escalável criada para resolver a dor de milhões de usuários brasileiros que buscam baixar vídeos e músicas da internet sem serem bombardeados por vírus, pop-ups invasivos ou páginas confusas.
+A maioria dos sites de download de vídeos na internet hoje é uma experiência frustrante: dezenas de pop-ups invasivos, anúncios com botões falsos de "Download", redirecionamentos suspeitos e risco de malware.
 
-Além da excelência técnica e visual, o projeto foi projetado estrategicamente com uma **arquitetura orientada a monetização (SaaS / Freemium)** e com **custo operacional próximo a zero** (graças ao modelo efêmero de retenção zero de arquivos).
-
----
-
-## 💎 Modelo de Negócio & Monetização
-
-O **COLA O LINK** foi estruturado para gerar múltiplas fontes de receita previsíveis e passivas:
-
-```text
-                               ┌─────────────────────────────┐
-                               │       COLA O LINK           │
-                               │  (Estratégia de Receita)    │
-                               └──────────────┬──────────────┘
-                                              │
-         ┌───────────────────┬────────────────┼───────────────────┬───────────────────┐
-         ▼                   ▼                ▼                   ▼                   ▼
-┌─────────────────┐ ┌─────────────────┐ ┌────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-│ Assinatura VIP  │ │ Anúncios Limpos │ │ Ferramentas IA │ │ Afiliados       │ │ API B2B         │
-│ R$ 9,90 / mês   │ │ Banners nativos │ │ Transcrição e  │ │ Softwares de    │ │ Créditos para   │
-│ Sem fila / 4K   │ │ durante loading │ │ cortes Shorts  │ │ edição de vídeo │ │ devs e bots     │
-└─────────────────┘ └─────────────────┘ └────────────────┘ └─────────────────┘ └─────────────────┘
-```
-
-### 1. 👑 Plano VIP / PRO (Assinatura Recorrente via Pix e Stripe)
-- **Usuário Grátis:** Downloads individuais em até 1080p com velocidade padrão.
-- **Usuário VIP (R$ 9,90/mês ou R$ 29/ano):**
-  - **Fila prioritária instantânea** (processamento acelerado).
-  - **Download de Playlists inteiras** com 1 clique em arquivo `.zip`.
-  - **Áudio de Alta Fidelidade (MP3 320 kbps / FLAC)**.
-  - **Zero anúncios** em toda a interface.
-
-### 2. 📢 Publicidade Programática Nativa
-- Posicionamento estratégico de banners não-intrusivos (Google AdSense / Monetag / Adsterra).
-- Anúncio de espera contextual exibido enquanto a barra de progresso do FFmpeg finaliza o vídeo.
-
-### 3. ✂️ Recursos Premium para Criadores de Conteúdo
-- **Gerador de Cortes:** Extração de trechos específicos de vídeos longos prontos para TikTok / Reels / Shorts.
-- **Transcrição com IA:** Geração automática de legendas `.srt` e texto transcrito.
-
-### 4. 🤝 Marketing de Afiliados
-- Recomendações integradas de editores de vídeo (CapCut Pro, Canva, Filmora) e bancos de áudio.
+O **COLA O LINK** foi criado com um propósito claro: **oferecer uma alternativa 100% limpa, rápida, moderna e de código aberto**. Uma ferramenta feita de desenvolvedor para a comunidade, onde você pode usar diretamente ou rodar na sua própria máquina/servidor com total privacidade.
 
 ---
 
-## ⚡ Diferenciais Técnicos
+## ✨ Recursos & Diferenciais
 
-- 🎧 **Áudio e Vídeo 100% Sincronizados:** Integração com **FFmpeg** para mesclagem automática de trilhas de vídeo HD e áudio em formato puro `.mp4`.
-- 🎵 **Conversão Real para MP3:** Extração de faixas sonoras convertidas diretamente em `.mp3` a 320 kbps.
-- 🚀 **Fila Híbrida Inteligente:** Alterna automaticamente entre Fila em Memória (desenvolvimento local sem configurações) e Redis + BullMQ (produção de alta concorrência).
-- 🧹 **Custo Zero de Armazenamento:** Política de Retenção Zero (TTL de 15 minutos). Arquivos temporários são apagados automaticamente por workers contínuos.
+- 🚀 **Interface Ultrarrápida & Moderna:** Desenvolvida em Next.js 14 (App Router) e Tailwind CSS com tema escuro imersivo.
+- 🎧 **Áudio e Vídeo 100% Sincronizados:** Integração inteligente com **FFmpeg** para mesclagem de fluxos HD de vídeo e áudio em formato puro `.mp4`.
+- 🎵 **Conversão Direta para MP3:** Extração de faixas sonoras em alta fidelidade (`.mp3` até 320 kbps).
+- 🔄 **Fila Híbrida Inteligente:** Roda localmente sem dependências externas (usando MemoryQueue assíncrona) ou em escala com **Redis + BullMQ**.
+- 🧹 **Retenção Zero de Dados:** Arquivos temporários são automaticamente limpos após o download (TTL configurável).
+- 🐳 **1-Click Self-Hosting:** Suporte nativo a Docker e Docker Compose com todas as dependências pré-instaladas (FFmpeg e yt-dlp).
 
 ---
 
-## 🛡️ Segurança, Criptografia e Conformidade
+## 🛡️ Segurança e Privacidade em Primeiro Lugar
 
-A plataforma segue rigorosos padrões de segurança cibernética e privacidade (LGPD/GDPR):
-
-1. **Criptografia HMAC-SHA256:** Links de download geram tokens assinados criptograficamente com expiração temporal para impedir ataques de enumeração (IDOR) e vazamento de links.
-2. **Proteção Anti-SSRF em Nível de DNS:** Validação rigorosa que impede requisições para IPs internos da infraestrutura (`localhost`, `10.x`, `192.168.x`, `169.254.169.254`).
-3. **Zero Command Injection:** Subprocessos executados exclusivamente através de listas explícitas de argumentos com `shell: false`.
-4. **Cabeçalhos HTTP Blindados:** Configuração nativa de HSTS, `X-Frame-Options: DENY` (anti-clickjacking), `nosniff` e `Permissions-Policy`.
-5. **Conformidade Ética:** O sistema não contorna DRM (Widevine/FairPlay), não acessa conteúdo privado sem autorização e não quebra paywalls.
+1. **Tokens HMAC-SHA256:** Links de download protegidos por assinaturas criptográficas temporárias para evitar enumeração de arquivos (IDOR).
+2. **Proteção Anti-SSRF em Nível de DNS:** Bloqueio rigoroso contra requisições a IPs de rede interna (`localhost`, `127.0.0.1`, `10.x`, `192.168.x`, `169.254.169.254`).
+3. **Execução Segura de Subprocessos:** Binários executados com argumentos explícitos e `shell: false`, prevenindo Command Injection.
+4. **Respeito a DRM e Conteúdos Protegidos:** O sistema não contorna DRM (Widevine, FairPlay), não quebra paywalls e não acessa mídias restritas.
 
 ---
 
@@ -94,119 +54,103 @@ A plataforma segue rigorosos padrões de segurança cibernética e privacidade (
 | Camada | Tecnologias |
 | :--- | :--- |
 | **Frontend** | Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons |
-| **Backend** | Next.js Server Components & Route Handlers, Zod, Crypto API |
-| **Mídia & Transcoding** | FFmpeg (Master Build) + yt-dlp |
+| **Backend** | Next.js Route Handlers & Server Actions, Zod, Web Crypto API |
+| **Mídia & Transcoding** | FFmpeg + yt-dlp |
 | **Filas & Workers** | BullMQ + Redis / Fila em Memória Assíncrona |
-| **Infraestrutura** | Docker (Multi-stage build), Docker Compose, Standalone Output |
-| **Testes** | Vitest (Suíte automatizada com 14+ testes de segurança e providers) |
+| **Infraestrutura** | Docker (Multi-stage build), Docker Compose |
+| **Testes** | Vitest (Suíte automatizada cobrindo Providers, Fila e Segurança) |
 
 ---
 
 ## 🏗️ Estrutura do Projeto
 
 ```text
-COLA O LINK
-├── app/
+├── app/                              # Rotas, API Handlers e Layouts do Next.js
 │   ├── api/
-│   │   ├── analyze/                  # POST: Análise de metadados e formatos
-│   │   └── download/                 # POST: Criação de jobs de download
-│   │       └── [jobId]/
-│   │           ├── route.ts          # GET: Status e progresso da fila
-│   │           └── file/route.ts     # GET: Entrega segura de streaming do arquivo
-│   ├── error.tsx                     # Error boundary do App Router
-│   ├── global-error.tsx              # Fallback global
-│   ├── globals.css                   # Estilos globais e design system escuro
-│   ├── layout.tsx                    # Layout raiz com SEO e tags sociais
-│   ├── loading.tsx                   # Indicador de carregamento suave
-│   ├── not-found.tsx                 # Página 404 personalizada
-│   └── page.tsx                      # Interface principal do usuário
-├── components/                       # Componentes modulares
-│   ├── DownloadProgress.tsx          # Card de progresso e botão de download final
-│   ├── Footer.tsx                    # Rodapé com branding e links legais
-│   ├── Header.tsx                    # Logotipo e navegação
-│   ├── Hero.tsx                      # Campo de busca e colar link
-│   ├── HowItWorks.tsx                # Guia visual em 3 passos
-│   ├── PlatformStatus.tsx            # Status de compatibilidade das plataformas
-│   ├── TermsModal.tsx                # Modal de termos de uso e conformidade
-│   └── VideoCard.tsx                 # Seleção de resolução (1080p, 720p, MP3)
+│   │   ├── analyze/                  # POST: Extração de metadados e formatos
+│   │   └── download/                 # POST/GET: Fila e streaming do arquivo
+├── components/                       # Componentes de UI (Hero, VideoCard, Progress, etc.)
+├── config/                           # Configurações globais centralizadas
 ├── lib/
 │   ├── errors/                       # Classes de erro tipadas
-│   ├── process/                      # Subprocessos seguros isolados
-│   └── security/                     # Rate limit, SSRF check, HMAC token e sanitize
-├── providers/                        # Providers desacoplados
-│   ├── instagram/                    # Provider Instagram (com suporte a cookies.txt)
-│   ├── reddit/                       # Provider Reddit
-│   ├── tiktok/                       # Provider TikTok
-│   ├── vimeo/                        # Provider Vimeo
-│   ├── x/                            # Provider X / Twitter
-│   ├── youtube/                      # Provider YouTube
-│   ├── registry.ts                   # Registro dinâmico de plataformas
+│   ├── process/                      # Execução segura de subprocessos
+│   └── security/                     # Rate limit, SSRF check, HMAC e sanitização
+├── providers/                        # Módulos desacoplados de plataformas de mídia
+│   ├── instagram/
+│   ├── reddit/
+│   ├── tiktok/
+│   ├── vimeo/
+│   ├── x/
+│   ├── youtube/
+│   ├── registry.ts                   # Registro dinâmico de provedores
 │   └── ytdlp-runner.ts               # Runner do yt-dlp + FFmpeg
 ├── queues/                           # Abstração de filas (Memory & BullMQ)
-├── services/                         # Serviços de negócio (Analyze, Download, Storage)
-├── tests/                            # Testes unitários com Vitest
-└── workers/                          # DownloadWorker e CleanupWorker
+├── services/                         # Lógica de negócio (Analyze, Download, Storage)
+├── tests/                            # Testes automatizados com Vitest
+└── workers/                          # Workers assíncronos de download e limpeza
 ```
 
 ---
 
-## 🚀 Como Executar Localmente
+## 🚀 Como Executar
 
-### 1. Pré-requisitos
-- **Node.js**: v18+ ou v20+
-- **NPM** instalado
+### Opção 1: Via Docker Compose (Recomendado)
 
-### 2. Instalação e Execução
+A forma mais simples de rodar tudo pronto com FFmpeg, yt-dlp e Redis configurados:
 
 ```bash
-# 1. Instalar as dependências
+# 1. Clonar o repositório
+git clone https://github.com/SEU-USUARIO/baixavideo.git
+cd baixavideo
+
+# 2. Subir a aplicação
+docker compose up -d --build
+```
+
+Acesse **[http://localhost:3000](http://localhost:3000)** no seu navegador.
+
+---
+
+### Opção 2: Localmente com Node.js
+
+```bash
+# 1. Instalar dependências
 npm install
 
-# 2. Executar a suíte de testes de segurança
+# 2. Rodar a suíte de testes
 npm test
 
 # 3. Iniciar o servidor de desenvolvimento
 npm run dev
 ```
 
-Abra **[http://localhost:3000](http://localhost:3000)** no seu navegador.
+> **Nota:** Para downloads locais sem Docker, certifique-se de ter o `ffmpeg` e o `yt-dlp` acessíveis no PATH do seu sistema ou na pasta `bin/`.
 
 ---
 
-## 🐳 Executando com Docker (Produção)
+## 🧪 Testes Automatizados
 
-Para subir o ambiente completo com **Node.js + Redis + FFmpeg + yt-dlp** isolados:
+Para executar os testes de segurança, providers e filas:
 
 ```bash
-# Iniciar todos os serviços
-docker compose up -d --build
-
-# Ver logs da aplicação
-docker compose logs -f app
-
-# Encerrar
-docker compose down
+npm test
 ```
 
 ---
 
-## 🌐 Guia de Hospedagem Econômica
+## 🤝 Como Contribuir
 
-Para manter o custo fixo abaixo de **R$ 35,00/mês**:
-
-1. **VPS Recomendada:** Hostinger Brasil (Datacenter São Paulo), Hetzner Cloud ou DigitalOcean.
-2. **CDN & Proteção:** Cloudflare (Plano 100% Free com SSL e Anti-DDoS).
-3. **Deploy:** Basta clonar o repositório na VPS e rodar `docker compose up -d`.
+Contribuições são super bem-vindas! Quer adicionar suporte a uma nova plataforma ou melhorar o desempenho?
+Confira o nosso [Guia de Contribuição (CONTRIBUTING.md)](./CONTRIBUTING.md) para ver como começar.
 
 ---
 
-## ⚖️ Termos de Uso e Aviso Legal
+## ⚖️ Aviso Legal & Isenção de Responsabilidade
 
-O **COLA O LINK** é uma ferramenta utilitária para conversão e visualização de conteúdos públicos. O usuário é o único responsável pelo uso legal dos arquivos baixados, devendo respeitar os direitos autorais dos criadores de conteúdo e os termos de serviço de cada plataforma.
+Este software é um utilitário desenvolvido para fins educacionais, de pesquisa e backup pessoal de mídias de domínio público ou explicitamente autorizadas pelos seus criadores. Os desenvolvedores deste projeto não hospedam nem possuem direitos sobre os conteúdos baixados pelos usuários finais e não incentivam a violação de direitos autorais ou dos termos de serviço das respectivas plataformas.
 
 ---
 
-<p align="center">
-  Feito com foco em performance, design e segurança.<br>
-  <strong>COLA O LINK © 2026</strong>
-</p>
+## 📄 Licença
+
+Distribuído sob a licença **MIT**. Consulte o arquivo [LICENSE](./LICENSE) para mais detalhes.

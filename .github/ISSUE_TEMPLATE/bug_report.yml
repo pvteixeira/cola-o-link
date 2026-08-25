@@ -1,0 +1,29 @@
+name: 🐛 Relato de Bug
+description: Crie um relatório de bug para nos ajudar a melhorar o COLA O LINK
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por relatar o problema! Por favor, preencha as informações abaixo para facilitar a reprodução e correção.
+  - type: input
+    id: url
+    attributes:
+      label: URL da Mídia / Plataforma com problema
+      description: Cole a URL pública que gerou erro (ex: link do YouTube, Instagram, etc.).
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Comportamento
+      description: O que aconteceu e o que era esperado que acontecesse?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Mensagem de Erro (se houver)
+      description: Cole qualquer log ou mensagem exibida no console ou terminal.
+      render: shell
