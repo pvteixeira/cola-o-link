@@ -19,7 +19,7 @@ export function getQueueManager(): IQueueManager {
 
   if (APP_CONFIG.queue.redisUrl && APP_CONFIG.queue.redisUrl.trim() !== '') {
     try {
-      manager = new BullMQManager();
+      manager = new BullMQManager(APP_CONFIG.queue.redisUrl);
       console.log('📦 [QueueManager] Inicializado BullMQ com Redis em:', APP_CONFIG.queue.redisUrl);
     } catch (err) {
       console.warn('⚠️ [QueueManager] Falha ao conectar ao Redis, utilizando fallback MemoryQueue:', err);

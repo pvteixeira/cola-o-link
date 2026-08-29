@@ -47,3 +47,18 @@ export async function processDownloadJob(
     downloadUrl,
   };
 }
+
+export class DownloadWorker {
+  private queueManager: any;
+
+  constructor(queueManager: any) {
+    this.queueManager = queueManager;
+  }
+
+  public start(): void {
+    if (this.queueManager && typeof this.queueManager.setProcessor === 'function') {
+      this.queueManager.setProcessor(processDownloadJob);
+    }
+  }
+}
+

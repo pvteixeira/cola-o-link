@@ -352,12 +352,17 @@ export async function downloadWithYtDlp(
         );
       } else {
         // Download de vídeo + áudio mesclados em MP4
-        const heightMatch = options.quality.match(/(\d+)p/);
+        const heightMatch = options.quality ? options.quality.match(/(\d+)p/) : null;
         const height = heightMatch ? heightMatch[1] : null;
 
-        const formatSelector = height
-          ? `bestvideo[height<=${height}][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=${height}]+bestaudio/best[height<=${height}]/best`
-          : 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best';
+        let formatSelector: string;
+        if (options.formatId && !['best', 'best_1080', 'best_720', 'audio_mp3'].includes(options.formatId)) {
+          formatSelector = `${options.formatId}+bestaudio/best/${options.formatId}`;
+        } else if (height) {
+          formatSelector = `bestvideo[height<=${height}]+bestaudio/best[height<=${height}]/best`;
+        } else {
+          formatSelector = 'bestvideo+bestaudio/best';
+        }
 
         args.push(
           '-f', formatSelector,
@@ -416,6 +421,7 @@ export async function downloadWithYtDlp(
             reject(new AppError('DOWNLOAD_FAILED', 'Arquivo processado não encontrado no disco.', 500, statErr));
           }
         } else {
+          console.error('[ytdlp-runner] Falha no processo yt-dlp:', stderrContent);
           const errLower = stderrContent.toLowerCase();
           if (errLower.includes('drm') || errLower.includes('protected')) {
             reject(AppError.drmProtected());
