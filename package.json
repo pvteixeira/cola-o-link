@@ -8,8 +8,11 @@
     "build": "next build",
     "start": "next start",
     "clean": "rimraf .next",
-    "lint": "next lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f app",
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",

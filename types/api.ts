@@ -1,4 +1,4 @@
-import { VideoFormat, PlatformId } from './video';
+import { VideoFormat, PlatformId, ClipOptions } from './video';
 import { JobStatus } from './job';
 
 export interface AnalyzeRequest {
@@ -23,6 +23,7 @@ export interface DownloadRequest {
   format: string;
   quality: string;
   formatId?: string;
+  clipOptions?: ClipOptions;
 }
 
 export interface DownloadResponse {

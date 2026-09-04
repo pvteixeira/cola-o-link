@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { VideoMetadata, VideoFormat } from '@/types/video';
-import { Download, Clock, User, Film, Music, Check, Sparkles, HardDrive, AlertTriangle } from 'lucide-react';
+import { VideoMetadata, VideoFormat, ClipOptions } from '@/types/video';
+import { Download, Clock, User, Film, Music, Check, Sparkles, HardDrive, Scissors } from 'lucide-react';
+import { ClipEditor } from '@/components/ClipEditor';
 
 interface VideoCardProps {
   metadata: VideoMetadata;
-  onStartDownload: (format: string, quality: string, formatId?: string) => Promise<void>;
+  onStartDownload: (format: string, quality: string, formatId?: string, clipOptions?: ClipOptions) => Promise<void>;
   isStartingDownload: boolean;
 }
 
@@ -15,11 +16,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   onStartDownload,
   isStartingDownload,
 }) => {
-  const [selectedType, setSelectedType] = useState<'video' | 'audio'>('video');
+  const [selectedType, setSelectedType] = useState<'video' | 'audio' | 'clip'>('video');
   const [selectedFormat, setSelectedFormat] = useState<VideoFormat>(() => {
-    // Escolhe por padrão o primeiro formato de vídeo com 1080p ou 720p
-    const defaultFormat = metadata.formats.find(f => f.hasVideo && (f.quality === '1080p' || f.quality === '720p')) 
-      || metadata.formats[0];
+    // Escolhe por padrão o formato de maior resolução disponível (ex: 4K, 2K, 1080p ou 720p)
+    const defaultFormat = metadata.formats.find(f => f.hasVideo) || metadata.formats[0];
     return defaultFormat;
   });
 
@@ -28,17 +28,29 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
   const currentList = selectedType === 'video' ? videoFormats : audioFormats;
 
-  const handleTypeChange = (type: 'video' | 'audio') => {
+  const handleTypeChange = (type: 'video' | 'audio' | 'clip') => {
     setSelectedType(type);
-    const firstOfCategory = (type === 'video' ? videoFormats : audioFormats)[0];
-    if (firstOfCategory) {
-      setSelectedFormat(firstOfCategory);
+    if (type !== 'clip') {
+      const firstOfCategory = (type === 'video' ? videoFormats : audioFormats)[0];
+      if (firstOfCategory) {
+        setSelectedFormat(firstOfCategory);
+      }
     }
   };
 
   const handleDownloadClick = async () => {
     if (!selectedFormat) return;
     await onStartDownload(selectedFormat.format, selectedFormat.quality, selectedFormat.id);
+  };
+
+  const handleGenerateClip = async (clipOptions: ClipOptions) => {
+    const bestVideo = videoFormats[0] || metadata.formats[0];
+    await onStartDownload(
+      bestVideo ? bestVideo.format : 'mp4',
+      bestVideo ? bestVideo.quality : '1080p',
+      bestVideo ? bestVideo.id : undefined,
+      clipOptions
+    );
   };
 
   return (
@@ -92,15 +104,15 @@ export const VideoCard: React.FC<VideoCardProps> = ({
                 </div>
               )}
 
-              {/* Media Type Tabs (Video MP4 / Audio MP3) */}
-              <div className="flex items-center gap-2 mb-4 p-1 rounded-xl bg-surface-elevated border border-gray-800 w-fit">
+              {/* Media Type Tabs (Video MP4 / Audio MP3 / Cortes & Shorts) */}
+              <div className="flex flex-wrap items-center gap-2 mb-4 p-1 rounded-xl bg-surface-elevated border border-gray-800 w-fit">
                 <button
                   type="button"
                   id="tab-select-video"
                   onClick={() => handleTypeChange('video')}
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                     selectedType === 'video'
-                      ? 'bg-cyan-500 text-gray-950 shadow-md shadow-cyan-500/20'
+                      ? 'bg-cyan-500 text-gray-950 shadow-md shadow-cyan-500/20 font-bold'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -113,72 +125,105 @@ export const VideoCard: React.FC<VideoCardProps> = ({
                   onClick={() => handleTypeChange('audio')}
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                     selectedType === 'audio'
-                      ? 'bg-cyan-500 text-gray-950 shadow-md shadow-cyan-500/20'
+                      ? 'bg-cyan-500 text-gray-950 shadow-md shadow-cyan-500/20 font-bold'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   <Music className="w-4 h-4" />
-                  <span>Apenas Áudio (MP3)</span>
+                  <span>Áudio (MP3)</span>
+                </button>
+                <button
+                  type="button"
+                  id="tab-select-clip"
+                  onClick={() => handleTypeChange('clip')}
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                    selectedType === 'clip'
+                      ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-gray-950 shadow-md shadow-emerald-500/20 font-bold'
+                      : 'text-emerald-400 hover:text-emerald-300'
+                  }`}
+                >
+                  <Scissors className="w-4 h-4" />
+                  <span>Cortes & Shorts</span>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] bg-emerald-400/20 text-emerald-300 uppercase tracking-wider font-bold">
+                    Novo
+                  </span>
                 </button>
               </div>
 
-              {/* Qualities Grid */}
-              <div className="mb-6">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2.5">
-                  Qualidade Disponível
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {currentList.map((format) => {
-                    const isSelected = selectedFormat?.id === format.id;
-                    return (
-                      <button
-                        key={format.id}
-                        type="button"
-                        onClick={() => setSelectedFormat(format)}
-                        className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all ${
-                          isSelected
-                            ? 'bg-cyan-950/40 border-cyan-500/80 ring-1 ring-cyan-500/50 shadow-md'
-                            : 'bg-surface-elevated/40 border-gray-800 hover:border-gray-700 text-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <span className={`text-xs sm:text-sm font-bold ${isSelected ? 'text-cyan-300' : 'text-white'}`}>
-                            {format.quality === 'audio_only' ? '320 kbps' : format.quality}
-                          </span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400" />}
-                        </div>
-                        <span className="text-[11px] text-gray-400 mt-0.5">
-                          {format.ext.toUpperCase()} {format.filesizeFormatted ? `• ${format.filesizeFormatted}` : ''}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+              {/* Modo Cortes & Shorts */}
+              {selectedType === 'clip' ? (
+                <ClipEditor
+                  metadata={metadata}
+                  onGenerateClip={handleGenerateClip}
+                  isProcessing={isStartingDownload}
+                />
+              ) : (
+                <>
+                  {/* Qualities Grid */}
+                  <div className="mb-6">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2.5">
+                      Qualidade Disponível
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {currentList.map((format) => {
+                        const isSelected = selectedFormat?.id === format.id;
+                        return (
+                          <button
+                            key={format.id}
+                            type="button"
+                            onClick={() => setSelectedFormat(format)}
+                            className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all ${
+                              isSelected
+                                ? 'bg-cyan-950/40 border-cyan-500/80 ring-1 ring-cyan-500/50 shadow-md'
+                                : 'bg-surface-elevated/40 border-gray-800 hover:border-gray-700 text-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className={`text-xs sm:text-sm font-bold ${isSelected ? 'text-cyan-300' : 'text-white'}`}>
+                                {format.quality === 'audio_only'
+                                  ? '320 kbps'
+                                  : format.quality === '2160p'
+                                  ? '4K (2160p)'
+                                  : format.quality === '1440p'
+                                  ? '2K (1440p)'
+                                  : format.quality}
+                              </span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400" />}
+                            </div>
+                            <span className="text-[11px] text-gray-400 mt-0.5">
+                              {format.quality === '2160p' ? 'Ultra HD' : format.quality === '1440p' ? 'Quad HD' : format.ext.toUpperCase()} {format.filesizeFormatted ? `• ${format.filesizeFormatted}` : ''}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-            {/* Estimated Size & Download CTA */}
-            <div className="pt-4 border-t border-gray-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <HardDrive className="w-4 h-4 text-cyan-400" />
-                <span>
-                  Tamanho estimado:{' '}
-                  <strong className="text-gray-200">
-                    {selectedFormat?.filesizeFormatted || 'Determinado durante o download'}
-                  </strong>
-                </span>
-              </div>
+                  {/* Estimated Size & Download CTA */}
+                  <div className="pt-4 border-t border-gray-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <HardDrive className="w-4 h-4 text-cyan-400" />
+                      <span>
+                        Tamanho estimado:{' '}
+                        <strong className="text-gray-200">
+                          {selectedFormat?.filesizeFormatted || 'Determinado durante o download'}
+                        </strong>
+                      </span>
+                    </div>
 
-              <button
-                id="btn-trigger-download"
-                type="button"
-                onClick={handleDownloadClick}
-                disabled={isStartingDownload || !selectedFormat}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-gray-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
-              >
-                <Download className="w-4 h-4" />
-                <span>BAIXAR ARQUIVO</span>
-              </button>
+                    <button
+                      id="btn-trigger-download"
+                      type="button"
+                      onClick={handleDownloadClick}
+                      disabled={isStartingDownload || !selectedFormat}
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-gray-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>BAIXAR ARQUIVO</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
           </div>
@@ -187,3 +232,4 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     </div>
   );
 };
+

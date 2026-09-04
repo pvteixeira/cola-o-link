@@ -9,6 +9,14 @@ const downloadSchema = z.object({
   format: z.string().default('mp4'),
   quality: z.string().default('1080p'),
   formatId: z.string().optional(),
+  clipOptions: z
+    .object({
+      clipStart: z.number().nonnegative().optional(),
+      clipEnd: z.number().positive().optional(),
+      burnSubtitles: z.boolean().optional(),
+      aspectRatio: z.enum(['original', 'vertical_9_16']).optional(),
+    })
+    .optional(),
 });
 
 export async function POST(req: Request) {

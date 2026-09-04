@@ -24,6 +24,7 @@ export class DownloadService {
       format: req.format || 'mp4',
       quality: req.quality || '1080p',
       formatId: req.formatId,
+      clipOptions: req.clipOptions,
       createdAt: Date.now(),
     };
 

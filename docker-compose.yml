@@ -15,10 +15,15 @@ services:
       - REDIS_URL=redis://redis:6379
       - TEMP_STORAGE_DIR=/tmp/colaolink-downloads
       - QUEUE_CONCURRENCY=3
+      - YT_DLP_PATH=/usr/local/bin/yt-dlp
+      - FFMPEG_PATH=/usr/bin/ffmpeg
     volumes:
       - colaolink-temp:/tmp/colaolink-downloads
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    networks:
+      - colaolink-net
 
   redis:
     image: redis:7-alpine
@@ -28,7 +33,19 @@ services:
       - "6379:6379"
     volumes:
       - colaolink-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - colaolink-net
 
 volumes:
   colaolink-temp:
   colaolink-redis-data:
+
+networks:
+  colaolink-net:
+    driver: bridge
+

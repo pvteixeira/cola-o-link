@@ -1,0 +1,27 @@
+.gradual-blur-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.gradual-blur {
+  pointer-events: none;
+}
+
+.gradual-blur-page {
+  position: fixed !important;
+  pointer-events: none;
+}
+
+.gradual-blur-parent {
+  position: absolute;
+  pointer-events: none;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .gradual-blur-inner > div {
+    background: rgba(11, 15, 23, 0.5);
+  }
+}
+

@@ -23,6 +23,7 @@ export async function processDownloadJob(
       formatId: jobData.formatId || 'best',
       format: jobData.format,
       quality: jobData.quality,
+      clipOptions: jobData.clipOptions,
     },
     (pct, msg) => {
       updateProgress(pct, msg);

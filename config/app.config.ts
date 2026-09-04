@@ -51,11 +51,7 @@ export const APP_CONFIG = {
     concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '2', 10),
   },
   binaries: {
-    ytDlpPath:
-      process.env.YT_DLP_PATH ||
-      (process.platform === 'win32' && path.resolve(process.cwd(), 'bin', 'yt-dlp.exe')) ||
-      path.resolve(process.cwd(), 'bin', 'yt-dlp') ||
-      'yt-dlp',
+    ytDlpPath: process.env.YT_DLP_PATH || 'yt-dlp',
     ffmpegPath: process.env.FFMPEG_PATH || 'ffmpeg',
   }
 };

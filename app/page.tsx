@@ -9,9 +9,11 @@ import { HowItWorks } from '@/components/HowItWorks';
 import { PlatformStatus } from '@/components/PlatformStatus';
 import { TermsModal } from '@/components/TermsModal';
 import { Footer } from '@/components/Footer';
-import { VideoMetadata } from '@/types/video';
+import { VideoMetadata, ClipOptions } from '@/types/video';
 import { AnalyzeResponse, DownloadResponse } from '@/types/api';
 import { AlertCircle, X, ShieldAlert } from 'lucide-react';
+import GradualBlur from '@/components/GradualBlur';
+
 
 export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -65,7 +67,12 @@ export default function Home() {
   };
 
   // 2. Ação de Início do Download
-  const handleStartDownload = async (format: string, quality: string, formatId?: string) => {
+  const handleStartDownload = async (
+    format: string,
+    quality: string,
+    formatId?: string,
+    clipOptions?: ClipOptions
+  ) => {
     if (!metadata) return;
     setIsStartingDownload(true);
     setErrorMessage(null);
@@ -79,6 +86,7 @@ export default function Home() {
           format,
           quality,
           formatId,
+          clipOptions,
         }),
       });
 
@@ -176,6 +184,22 @@ export default function Home() {
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
       />
+
+      {/* Top Gradual Blur: Blurs content as it scrolls under the Header without blurring the Header itself */}
+      <GradualBlur
+        target="page"
+        position="top"
+        height="6.5rem"
+        strength={3}
+        divCount={7}
+        curve="bezier"
+        exponential
+        opacity={1}
+        zIndex={40}
+        ambientLight={false}
+        fadeToBackground={true}
+      />
     </div>
   );
 }
+

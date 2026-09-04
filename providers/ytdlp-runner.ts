@@ -9,6 +9,7 @@ import { AppError } from '@/lib/errors/app-error';
 import { ProgressCallback } from '@/providers/base.provider';
 import { sanitizeFilename, assertSafeFilePath, formatBytes, formatDuration, getMimeTypeForExtension } from '@/lib/security/sanitize';
 import { VideoFormat, VideoMetadata, DownloadOptions, DownloadResult, PlatformId } from '@/types/video';
+import { downloadSubtitles, sliceAndOffsetSubtitles, parseSrt, stringifyAss } from '@/lib/media/subtitles';
 
 interface YtDlpFormat {
   format_id: string;
@@ -20,6 +21,7 @@ interface YtDlpFormat {
   vcodec?: string;
   acodec?: string;
   height?: number;
+  width?: number;
   fps?: number;
 }
 
@@ -35,30 +37,61 @@ interface YtDlpInfo {
   formats?: YtDlpFormat[];
 }
 
-let isYtDlpAvailableCache: boolean | null = null;
+let resolvedYtDlpBin: string | null = null;
+let resolvedFfmpegBin: string | null = null;
 
-function getYtDlpBinaryPath(): string {
+function getYtDlpCandidates(): string[] {
+  const candidates: string[] = [];
+  if (process.env.YT_DLP_PATH) {
+    candidates.push(process.env.YT_DLP_PATH);
+  }
   const localWin = path.resolve(process.cwd(), 'bin', 'yt-dlp.exe');
   if (fsSync.existsSync(localWin)) {
-    return localWin;
+    candidates.push(localWin);
   }
   const localUnix = path.resolve(process.cwd(), 'bin', 'yt-dlp');
   if (fsSync.existsSync(localUnix)) {
-    return localUnix;
+    candidates.push(localUnix);
   }
-  return APP_CONFIG.binaries.ytDlpPath || 'yt-dlp';
+  if (fsSync.existsSync('/usr/local/bin/yt-dlp')) {
+    candidates.push('/usr/local/bin/yt-dlp');
+  }
+  if (fsSync.existsSync('/usr/bin/yt-dlp')) {
+    candidates.push('/usr/bin/yt-dlp');
+  }
+  candidates.push('yt-dlp');
+  return candidates;
+}
+
+function getYtDlpBinaryPath(): string {
+  return resolvedYtDlpBin || 'yt-dlp';
 }
 
 function getFfmpegBinaryPath(): string | null {
+  if (resolvedFfmpegBin) return resolvedFfmpegBin;
+  if (process.env.FFMPEG_PATH) {
+    resolvedFfmpegBin = process.env.FFMPEG_PATH;
+    return resolvedFfmpegBin;
+  }
   const localWin = path.resolve(process.cwd(), 'bin', 'ffmpeg.exe');
   if (fsSync.existsSync(localWin)) {
-    return localWin;
+    resolvedFfmpegBin = localWin;
+    return resolvedFfmpegBin;
   }
   const localUnix = path.resolve(process.cwd(), 'bin', 'ffmpeg');
   if (fsSync.existsSync(localUnix)) {
-    return localUnix;
+    resolvedFfmpegBin = localUnix;
+    return resolvedFfmpegBin;
   }
-  return APP_CONFIG.binaries.ffmpegPath || null;
+  if (fsSync.existsSync('/usr/bin/ffmpeg')) {
+    resolvedFfmpegBin = '/usr/bin/ffmpeg';
+    return resolvedFfmpegBin;
+  }
+  if (fsSync.existsSync('/usr/local/bin/ffmpeg')) {
+    resolvedFfmpegBin = '/usr/local/bin/ffmpeg';
+    return resolvedFfmpegBin;
+  }
+  return 'ffmpeg';
 }
 
 function getCookiesPath(): string | null {
@@ -70,18 +103,23 @@ function getCookiesPath(): string | null {
 }
 
 export async function isYtDlpAvailable(): Promise<boolean> {
-  if (isYtDlpAvailableCache !== null) {
-    return isYtDlpAvailableCache;
+  if (resolvedYtDlpBin !== null) {
+    return true;
   }
-  try {
-    const bin = getYtDlpBinaryPath();
-    const { stdout } = await safeExec(bin, ['--version'], { timeoutMs: 5000 });
-    isYtDlpAvailableCache = Boolean(stdout && stdout.trim().length > 0);
-    return isYtDlpAvailableCache;
-  } catch {
-    isYtDlpAvailableCache = false;
-    return false;
+  const candidates = getYtDlpCandidates();
+  for (const bin of candidates) {
+    try {
+      const { stdout } = await safeExec(bin, ['--version'], { timeoutMs: 15000 });
+      if (stdout && stdout.trim().length > 0) {
+        resolvedYtDlpBin = bin;
+        console.log(`[ytdlp-runner] yt-dlp detectado e pronto: ${bin} (v${stdout.trim()})`);
+        return true;
+      }
+    } catch (e: any) {
+      console.warn(`[ytdlp-runner] Candidato yt-dlp ${bin} indisponível:`, e?.message || e);
+    }
   }
+  return false;
 }
 
 /**
@@ -93,24 +131,47 @@ export function normalizeYtDlpFormats(formats: YtDlpFormat[] = []): VideoFormat[
 
   for (const f of formats) {
     const hasVideo = f.vcodec !== 'none' && Boolean(f.vcodec);
-    const height = f.height || 0;
+    // Para vídeos verticais (ex: Shorts, Reels, TikTok), a menor dimensão define a resolução (ex: 1080x1920 -> 1080p)
+    const effectiveHeight = (f.height && f.width && f.height > f.width) ? f.width : (f.height || 0);
 
-    if (hasVideo && height > 0) {
-      let quality = 'SD';
-      if (height >= 1080) quality = '1080p';
-      else if (height >= 720) quality = '720p';
-      else if (height >= 480) quality = '480p';
-      else if (height >= 360) quality = '360p';
-      else quality = `${height}p`;
+    if (hasVideo && effectiveHeight > 0) {
+      let quality = `${effectiveHeight}p`;
+      let label = `${effectiveHeight}p (MP4)`;
+
+      if (effectiveHeight >= 2160) {
+        quality = '2160p';
+        label = '4K Ultra HD (2160p)';
+      } else if (effectiveHeight >= 1440) {
+        quality = '1440p';
+        label = '2K Quad HD (1440p)';
+      } else if (effectiveHeight >= 1080) {
+        quality = '1080p';
+        label = 'Full HD (1080p)';
+      } else if (effectiveHeight >= 720) {
+        quality = '720p';
+        label = 'HD (720p)';
+      } else if (effectiveHeight >= 480) {
+        quality = '480p';
+        label = 'SD (480p)';
+      } else if (effectiveHeight >= 360) {
+        quality = '360p';
+        label = '360p (SD)';
+      } else if (effectiveHeight >= 240) {
+        quality = '240p';
+        label = '240p';
+      } else if (effectiveHeight >= 144) {
+        quality = '144p';
+        label = '144p';
+      }
 
       if (!seenQualities.has(quality)) {
         seenQualities.add(quality);
         const size = f.filesize || f.filesize_approx;
         result.push({
-          id: f.format_id,
+          id: quality,
           format: 'mp4',
           quality: quality,
-          label: `${quality} (MP4 Vídeo + Áudio)`,
+          label: label,
           filesize: size,
           filesizeFormatted: formatBytes(size),
           ext: 'mp4',
@@ -177,12 +238,15 @@ export async function extractYtDlpMetadata(url: string, platform: PlatformId): P
       const bin = getYtDlpBinaryPath();
       const cookiesBin = getCookiesPath();
 
+      const cacheDir = path.join(APP_CONFIG.storage.tempDir, '.cache');
       const args = [
         '--dump-single-json',
         '--no-playlist',
         '--no-warnings',
         '--no-check-certificates',
         '--skip-download',
+        '--no-audio-multistreams',
+        '--cache-dir', cacheDir,
       ];
 
       if (cookiesBin) {
@@ -216,6 +280,7 @@ export async function extractYtDlpMetadata(url: string, platform: PlatformId): P
         formats,
       };
     } catch (err) {
+      console.error('[ytdlp-runner] Erro ao extrair metadados via yt-dlp:', err);
       if (err instanceof AppError) throw err;
     }
   }
@@ -326,11 +391,22 @@ export async function downloadWithYtDlp(
       const ffmpegBin = getFfmpegBinaryPath();
       const cookiesBin = getCookiesPath();
 
+      const cacheDir = path.join(APP_CONFIG.storage.tempDir, '.cache');
+      const clip = options.clipOptions;
+      const isClip = typeof clip?.clipStart === 'number' && typeof clip?.clipEnd === 'number' && clip.clipEnd > clip.clipStart;
+
       const args: string[] = [
         '--no-playlist',
         '--no-warnings',
         '--no-check-certificates',
+        '--no-audio-multistreams',
+        '--no-video-multistreams',
+        '--cache-dir', cacheDir,
       ];
+
+      if (isClip && clip) {
+        args.push('--download-sections', `*${clip.clipStart}-${clip.clipEnd}`);
+      }
 
       if (cookiesBin) {
         args.push('--cookies', cookiesBin);
@@ -343,7 +419,7 @@ export async function downloadWithYtDlp(
       if (isAudio) {
         // Extração de áudio em MP3 genuíno
         args.push(
-          '-f', 'bestaudio/best',
+          '-f', 'ba/b/bestaudio/best',
           '-x',
           '--audio-format', 'mp3',
           '--audio-quality', '0',
@@ -351,22 +427,29 @@ export async function downloadWithYtDlp(
           url
         );
       } else {
-        // Download de vídeo + áudio mesclados em MP4
+        // Download de vídeo + áudio garantidos e mesclados em MP4 com codecs universais
         const heightMatch = options.quality ? options.quality.match(/(\d+)p/) : null;
-        const height = heightMatch ? heightMatch[1] : null;
+        const height = heightMatch ? parseInt(heightMatch[1], 10) : null;
 
         let formatSelector: string;
-        if (options.formatId && !['best', 'best_1080', 'best_720', 'audio_mp3'].includes(options.formatId)) {
-          formatSelector = `${options.formatId}+bestaudio/best/${options.formatId}`;
-        } else if (height) {
-          formatSelector = `bestvideo[height<=${height}]+bestaudio/best[height<=${height}]/best`;
+        if (height) {
+          formatSelector = [
+            `bv*[height<=${height}]+ba`,
+            `b[height<=${height}]`,
+            `bv*+ba`,
+            `b`,
+          ].join('/');
         } else {
-          formatSelector = 'bestvideo+bestaudio/best';
+          formatSelector = [
+            `bv*+ba`,
+            `b`,
+          ].join('/');
         }
 
         args.push(
           '-f', formatSelector,
           '--merge-output-format', 'mp4',
+          '--postprocessor-args', 'Merger:-c:v copy -c:a aac -b:a 192k',
           '-o', outputTemplate,
           url
         );
@@ -399,22 +482,139 @@ export async function downloadWithYtDlp(
         if (code === 0) {
           try {
             const allFiles = await fs.readdir(APP_CONFIG.storage.tempDir);
-            const foundFile = allFiles.find((f) => f.startsWith(filePrefix));
+            
+            // Filtra apenas arquivos pertencentes a esta requisição que não sejam temporários de download
+            const relatedFiles = allFiles.filter(
+              (f) =>
+                f.startsWith(filePrefix) &&
+                !f.endsWith('.part') &&
+                !f.endsWith('.ytdl') &&
+                !f.endsWith('.temp')
+            );
 
-            if (!foundFile) {
-              throw new Error(`Arquivo com prefixo ${filePrefix} não encontrado.`);
+            if (relatedFiles.length === 0) {
+              throw new Error(`Nenhum arquivo válido com prefixo ${filePrefix} foi encontrado.`);
             }
 
-            const actualFilePath = path.join(APP_CONFIG.storage.tempDir, foundFile);
-            const stats = await fs.stat(actualFilePath);
-            const actualExt = path.extname(foundFile).replace('.', '').toLowerCase() || targetExt;
-            const finalSafeName = sanitizeFilename(videoTitle, actualExt);
+            // Seleciona o arquivo final correto (NUNCA seleciona fragmentos intermediários .f137 / .f140)
+            let foundFile: string | undefined;
 
-            onProgress?.(100, isAudio ? 'Áudio MP3 pronto com sucesso!' : 'Vídeo MP4 pronto com sucesso!');
+            if (isAudio) {
+              // Para áudio: prioriza .mp3, depois outros formatos de áudio finais
+              foundFile =
+                relatedFiles.find((f) => f === `${filePrefix}.mp3`) ||
+                relatedFiles.find((f) => /\.(mp3|m4a|aac|wav|ogg|opus)$/i.test(f) && !f.includes('.f'));
+            } else {
+              // Para vídeo: prioriza .mp4 mesclado final
+              foundFile =
+                relatedFiles.find((f) => f === `${filePrefix}.mp4`) ||
+                relatedFiles.find((f) => /\.(mp4|mkv|webm|mov|avi)$/i.test(f) && !f.includes('.f'));
+            }
+
+            if (!foundFile) {
+              console.error('[ytdlp-runner] Arquivos encontrados:', relatedFiles);
+              throw new Error(`O arquivo final de vídeo/áudio mesclado não pôde ser gerado.`);
+            }
+
+            let actualFilePath = path.join(APP_CONFIG.storage.tempDir, foundFile);
+            let stats = await fs.stat(actualFilePath);
+            const actualExt = path.extname(foundFile).replace('.', '').toLowerCase() || targetExt;
+
+            // Pós-processamento de Legendas e/ou Formato Vertical 9:16
+            if (!isAudio && (clip?.burnSubtitles || clip?.aspectRatio === 'vertical_9_16')) {
+              try {
+                onProgress?.(93, 'Aplicando corte e formatação visual...');
+                let subFilePath: string | null = null;
+
+                if (clip.burnSubtitles) {
+                  onProgress?.(95, 'Extraindo e sincronizando legendas automáticas...');
+                  const rawSubs = await downloadSubtitles(url, bin, APP_CONFIG.storage.tempDir);
+                  if (rawSubs) {
+                    const slicedSrt = sliceAndOffsetSubtitles(rawSubs, clip.clipStart || 0, clip.clipEnd || 999999);
+                    const cues = parseSrt(slicedSrt);
+                    if (cues && cues.length > 0) {
+                      // Converte para ASS com estilização avançada (fonte amarela, contorno preto, destaque)
+                      const assContent = stringifyAss(cues);
+                      subFilePath = path.join(APP_CONFIG.storage.tempDir, `${filePrefix}_temp.ass`);
+                      await fs.writeFile(subFilePath, assContent, 'utf-8');
+                      console.log(`[ytdlp-runner] Legendas ASS criadas com sucesso: ${cues.length} frases.`);
+                    }
+                  } else {
+                    console.warn('[ytdlp-runner] Nenhuma legenda automática encontrada para este vídeo.');
+                  }
+                }
+
+                const isVertical = clip.aspectRatio === 'vertical_9_16';
+                const processedOutput = path.join(APP_CONFIG.storage.tempDir, `${filePrefix}_processed.mp4`);
+                const ffmpegCmd = ffmpegBin || 'ffmpeg';
+
+                const ffmpegArgs: string[] = ['-y', '-i', actualFilePath];
+
+                // Escape seguro para caminhos de arquivo no libavfilter do FFmpeg:
+                // No Windows e Linux: barras normais '/', ':' escapado como '\:', e aspas escapadas
+                let filterComplex = '';
+                const formatSubFilter = (filePath: string) => {
+                  const sanitizedPath = filePath.replace(/\\/g, '/').replace(/:/g, '\\:').replace(/'/g, "\\'");
+                  // Usa o filtro 'ass' para arquivos .ass ou 'subtitles' com estilo
+                  if (filePath.endsWith('.ass')) {
+                    return `ass='${sanitizedPath}'`;
+                  }
+                  const fallbackStyle = "Fontname=DejaVu Sans,FontSize=24,Bold=1,PrimaryColour=&H0000FFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=3,Alignment=2,MarginV=80";
+                  return `subtitles='${sanitizedPath}':force_style='${fallbackStyle}'`;
+                };
+
+                if (isVertical) {
+                  // Converte 16:9 para 9:16 com fundo desfocado e vídeo centralizado
+                  const baseV = `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:5[bg];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]`;
+                  if (subFilePath && fsSync.existsSync(subFilePath)) {
+                    const subFilter = formatSubFilter(subFilePath);
+                    filterComplex = `${baseV};[v]${subFilter}[out]`;
+                    ffmpegArgs.push('-filter_complex', filterComplex, '-map', '[out]', '-map', '0:a?');
+                  } else {
+                    filterComplex = baseV;
+                    ffmpegArgs.push('-filter_complex', filterComplex, '-map', '[v]', '-map', '0:a?');
+                  }
+                } else if (subFilePath && fsSync.existsSync(subFilePath)) {
+                  const subFilter = formatSubFilter(subFilePath);
+                  ffmpegArgs.push('-vf', subFilter);
+                }
+
+                ffmpegArgs.push('-c:v', 'libx264', '-preset', 'fast', '-crf', '22', '-c:a', 'aac', '-b:a', '192k', processedOutput);
+
+                onProgress?.(97, 'Renderizando clipe final com legendas...');
+                await safeExec(ffmpegCmd, ffmpegArgs, { timeoutMs: 180000 });
+
+                if (fsSync.existsSync(processedOutput)) {
+                  await fs.unlink(actualFilePath).catch(() => {});
+                  actualFilePath = processedOutput;
+                  stats = await fs.stat(actualFilePath);
+                }
+
+                if (subFilePath && fsSync.existsSync(subFilePath)) {
+                  await fs.unlink(subFilePath).catch(() => {});
+                }
+              } catch (clipErr) {
+                console.warn('[ytdlp-runner] Aviso: Falha na renderização de legendas/vertical, mantendo arquivo padrão:', clipErr);
+              }
+            }
+
+            const titleSuffix = isClip ? (clip?.aspectRatio === 'vertical_9_16' ? '_shorts' : '_corte') : '';
+            const finalSafeName = sanitizeFilename(`${videoTitle}${titleSuffix}`, actualExt);
+
+            // Limpa eventuais arquivos temporários residuais (.f140.m4a, .f137.mp4) do mesmo prefixo
+            for (const file of relatedFiles) {
+              if (file !== foundFile && (file.includes('.f') || file.includes('.temp'))) {
+                try {
+                  await fs.unlink(path.join(APP_CONFIG.storage.tempDir, file));
+                } catch {}
+              }
+            }
+
+            onProgress?.(100, isAudio ? 'Áudio MP3 pronto com sucesso!' : isClip ? 'Clipe finalizado com sucesso!' : 'Vídeo MP4 pronto com sucesso!');
             resolve({
               filePath: actualFilePath,
               fileName: finalSafeName,
-              mimeType: isAudio ? 'audio/mpeg' : 'video/mp4',
+              mimeType: getMimeTypeForExtension(actualExt) || (isAudio ? 'audio/mpeg' : 'video/mp4'),
               fileSize: stats.size,
             });
           } catch (statErr) {
@@ -428,35 +628,16 @@ export async function downloadWithYtDlp(
           } else if (errLower.includes('private')) {
             reject(AppError.privateContent());
           } else {
-            reject(new AppError('DOWNLOAD_FAILED', 'Falha durante o processamento do arquivo.', 500));
+            reject(new AppError('DOWNLOAD_FAILED', 'Falha durante o processamento do arquivo de vídeo/áudio.', 500));
           }
         }
       });
 
       proc.on('error', (err) => {
-        reject(new AppError('DOWNLOAD_FAILED', 'Erro ao inicializar o processo.', 500, err));
+        reject(new AppError('DOWNLOAD_FAILED', 'Erro ao inicializar o processo do yt-dlp.', 500, err));
       });
     });
   }
 
-  // Fallback
-  for (let p = 15; p <= 90; p += 25) {
-    await new Promise((r) => setTimeout(r, 400));
-    onProgress?.(p, `Processando mídia (${p}%)...`);
-  }
-
-  const fallbackPath = path.join(APP_CONFIG.storage.tempDir, `${filePrefix}.${targetExt}`);
-  const placeholderContent = Buffer.from(
-    `COLA O LINK Media - ${videoTitle}\nFormato: ${options.format.toUpperCase()}\nQualidade: ${options.quality}\nData: ${new Date().toISOString()}`
-  );
-  await fs.writeFile(fallbackPath, placeholderContent);
-
-  onProgress?.(100, 'Arquivo pronto para download!');
-
-  return {
-    filePath: fallbackPath,
-    fileName: sanitizeFilename(videoTitle, targetExt),
-    mimeType: isAudio ? 'audio/mpeg' : 'video/mp4',
-    fileSize: placeholderContent.length,
-  };
+  throw AppError.downloadFailed('O utilitário yt-dlp não está instalado ou disponível no ambiente.');
 }

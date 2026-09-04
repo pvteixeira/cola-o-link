@@ -13,14 +13,14 @@ export const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
         
         {/* Brand */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center">
-            <DownloadCloud className="w-4 h-4 text-cyan-400" />
+        <div className="flex items-center gap-2.5 select-none">
+          <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.12)]">
+            <DownloadCloud className="w-4 h-4" />
           </div>
-          <span className="text-sm font-black text-white uppercase">
-            COLA O <span className="text-gradient">LINK</span>
+          <span className="text-sm font-bold tracking-tight text-white uppercase">
+            COLA O <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">LINK</span>
           </span>
-          <span className="text-xs text-gray-500 ml-2">© {new Date().getFullYear()}</span>
+          <span className="text-xs text-slate-500 ml-2">© {new Date().getFullYear()}</span>
         </div>
 
         {/* Links */}

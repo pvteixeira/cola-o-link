@@ -29,10 +29,29 @@ export interface VideoMetadata {
   restrictionReason?: string;
 }
 
+export interface ClipOptions {
+  clipStart?: number; // em segundos
+  clipEnd?: number; // em segundos
+  burnSubtitles?: boolean;
+  aspectRatio?: 'original' | 'vertical_9_16';
+}
+
+export interface SuggestedClip {
+  id: string;
+  title: string;
+  start: number;
+  end: number;
+  duration: number;
+  snippet?: string;
+  tag?: string; // ex: "🔥 Alta Energia", "⚡ Viral 20s", "🎯 Gancho 15s"
+  score?: number; // pontuação de relevância / engajamento
+}
+
 export interface DownloadOptions {
   formatId: string;
   format: string; // 'mp4', 'mp3', etc.
   quality: string; // '1080p', etc.
+  clipOptions?: ClipOptions;
 }
 
 export interface DownloadResult {
@@ -41,3 +60,4 @@ export interface DownloadResult {
   mimeType: string;
   fileSize: number;
 }
+

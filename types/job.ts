@@ -1,4 +1,4 @@
-import { PlatformId } from './video';
+import { PlatformId, ClipOptions } from './video';
 
 export type JobStatus =
   | 'queued'
@@ -15,6 +15,7 @@ export interface JobData {
   format: string;
   quality: string;
   formatId?: string;
+  clipOptions?: ClipOptions;
   createdAt: number;
 }
 
